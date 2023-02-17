@@ -40,16 +40,14 @@ class User(Model):
     authenticated = db.Column(db.Boolean, default=False)
     active = db.Column(db.Boolean, default=True)
 
-    address = db.relationship("Address", back_populates="user")
+    # address = db.relationship("Address", back_populates="user")
     
     # client_reservations = db.relationship("Reservation")
     # driver_reservations = db.relationship("Reservation")
     
     # client_reports = db.relationship("UserReports")
     # driver_reports = db.relationship("DriverReports")
-    
-    
-    
+
     def __init__(self, email, password, username, admin=False, access=Access.USER, last_name=None, first_name=None):
         """"""
         Model.__init__(self)

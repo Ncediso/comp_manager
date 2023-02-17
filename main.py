@@ -2,6 +2,7 @@ import os
 import unittest
 from datetime import datetime, timezone, timedelta
 from flask_jwt_extended import JWTManager
+# import flask_migrate
 from flask_migrate import Migrate  # , MigrateCommand
 # from flask_script import Manager
 

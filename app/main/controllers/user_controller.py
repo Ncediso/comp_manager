@@ -1,8 +1,8 @@
 from flask import request
 from flask_restx import Resource
-from flask_jwt_extended import jwt_required
+# from flask_jwt_extended import jwt_required
 
-from app.main.app_utils.decorator import admin_token_required
+from app.main.app_utils.decorators import admin_token_required
 from ..app_utils.dto import UserDto
 from ..services.user_service import UserService
 from typing import Dict, Tuple

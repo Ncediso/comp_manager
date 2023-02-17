@@ -32,3 +32,17 @@ class UserDto:
         "admin": fields.Boolean(),
         "active": fields.Boolean()
     })
+
+
+class AuthDto:
+    api = Namespace('auth', description='authentication related operations')
+    user_auth = api.model('auth_details', {
+        'email': fields.String(required=True, description='The email address'),
+        'password': fields.String(required=True, description='The user password '),
+    })
+
+    user_register = api.model('new_user_details', {
+        "username": fields.String(required=True, min_length=2, max_length=32),
+        "email": fields.String(required=True, min_length=4, max_length=64),
+        "password": fields.String(required=True, min_length=4, max_length=16)
+    })
