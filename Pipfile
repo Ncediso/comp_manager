@@ -12,6 +12,7 @@ flask-login = "*"
 jwt = "*"
 flask-jwt = "*"
 flask-bcrypt = "*"
+flask-sqlalchemy = "*"
 
 [dev-packages]
 

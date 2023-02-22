@@ -1,13 +1,15 @@
+import os
 import sys
 import re
 import time
 from collections import OrderedDict
 import getpass
 import logging
-
+import threading
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s", datefmt="%y%m%d %H%M%S")
 LOGGER = logging.getLogger(__name__)
+lock = threading.Lock()
 
 
 class FAConnect:
@@ -40,8 +42,8 @@ class FAConnect:
     )
     tries = 0
 
-    def __init__(self, env_name, username=None, password=None, archive_mode=False, historical_date=None, date_today=None, ael_python_path=None):
-        self.single_sign_on = False
+    def __init__(self, env_name=None, username=None, password=None, archive_mode=False, historical_date=None, date_today=None):
+
         self.config_handler = None
         self.principal = None
         self.session = None
@@ -51,43 +53,33 @@ class FAConnect:
         self._dict = OrderedDict
         self._defaults = OrderedDict()
         self._optcre = self.OPTCRE
-        self.env_name = env_name
-        self.password = None
         self.archive = archive_mode
         self.historical_date = historical_date
         self.date_today = date_today
+        self.ads_url = None
 
-        FAConnect.AEL_PYTHON_PATH = ael_python_path
+        self.server = os.environ["FRONT_SERVER"]
+        self.port = os.environ["FRONT_PORT"]
+        self.single_sign_on = bool(os.environ["SSO"])
+        self.env_name = os.environ["FRONT_ENVIRONMENT"] if not env_name else env_name
+        self.password = os.environ["PASSWORD"] if not self.single_sign_on else None
+        self.username = os.environ["USERNAME"]
+        self.ael_python_path = os.environ["AEL_PYTHON_PATH"]
+        self.ini_file_path = os.environ["INI_FILE_PATH"]
+
+        FAConnect.AEL_PYTHON_PATH = self.ael_python_path
+        sys.path.append(self.ael_python_path)
 
         if username:
             self.username = username
-        else:
+        if not username and self.single_sign_on:
             self.username = getpass.getuser()
+
         if password:
             self.password = password
 
     def __enter__(self):
-        sys.path.append(FAConnect.AEL_PYTHON_PATH)
-        import acm
-        import ael
-
-        ads_url = self.get_ads_url()
-        LOGGER.info("About to connect")
-
-        if self.date_today:
-            ael.date_today = self.date_today
-            acm.Time.SetDateToday(self.date_today)
-        if self.historical_date:
-            ael.historical_date = self.historical_date
-            acm.Time.SetHistoricalDate(self.historical_date)
-
-        if self.password:
-            self.single_sign_on = False
-        con = acm.Connect(ads_url, self.username, self.password, self.amas_pass, self.app, self.archive, self.session,
-                          self.principal, self.config_handler, self.single_sign_on)
-
-        LOGGER.info("Connected to {} with User {}\n".format(self.env_name, self.username))
-
+        self.connect()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -101,8 +93,62 @@ class FAConnect:
             is_connected = acm.IsConnected()
         LOGGER.info("Disconnected from {} Front, {} Tries".format(self.username, tries))
 
+    def disconnect(self):
+        import acm
+        is_connected = acm.IsConnected()
+        tries = 0
+        while is_connected:
+            acm.Disconnect()
+            time.sleep(10)
+            tries += 1
+            is_connected = acm.IsConnected()
+        LOGGER.info("Disconnected from {} Front, {} Tries".format(self.username, tries))
+
+    def _ads_url(self):
+        if self.env_name:
+            self.ads_url = self.get_ads_url()
+        elif self.server and self.port:
+            self.ads_url = "{}:{}".format(self.server, self.port)
+        else:
+            raise ValueError("No server/environment provided")
+
+    def connect(self):
+        self._ads_url()
+        import acm
+        import ael
+
+        LOGGER.info("About to connect")
+
+        if self.date_today:
+            ael.date_today = self.date_today
+            acm.Time.SetDateToday(self.date_today)
+        if self.historical_date:
+            ael.historical_date = self.historical_date
+            acm.Time.SetHistoricalDate(self.historical_date)
+
+        if self.password:
+            self.single_sign_on = False
+        con = acm.Connect(self.ads_url, self.username, self.password, self.amas_pass, self.app, self.archive, self.session,
+                          self.principal, self.config_handler, self.single_sign_on)
+
+        LOGGER.info("Connected to {} with User {}\n".format(self.env_name, self.username))
+
+    def connection_status(self):
+        import acm
+        is_connected = acm.IsConnected()
+        if is_connected:
+            info = {
+                "is-connected": acm.IsConnected(),
+                "environment": self.env_name
+            }
+        else:
+            info = {
+                "is-connected": acm.IsConnected()
+            }
+        return info
+
     def load_config(self):
-        with open(self.INI_FILE_PATH, 'rU') as fin:
+        with open(self.ini_file_path, 'rU') as fin:
             self._read(fin, fin.name)
         return None
 
@@ -224,3 +270,7 @@ class FAConnect:
 
     def execute(self, *args):
         raise NotImplementedError("No implementation found")
+
+    def is_connected(self):
+        import acm
+        return acm.IsConnected()

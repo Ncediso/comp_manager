@@ -7,7 +7,6 @@ class UserDto:
     user = api.model('user', {
         'email': fields.String(required=True, description='user email address'),
         'username': fields.String(required=True, description='user username'),
-        'password': fields.String(required=True, description='user password'),
         'public_id': fields.String(description='user Identifier')
     })
     
@@ -21,7 +20,7 @@ class UserDto:
         "last_name": fields.String(required=True, min_length=4, max_length=100)
     })
     
-    admin_user_update = api.model('admin_edit_user_details',{
+    admin_user_update = api.model('admin_edit_user_details', {
         "title": fields.String(required=True, min_length=1, max_length=20),
         "first_name": fields.String(required=True, min_length=1, max_length=100),
         "username": fields.String(required=True, min_length=2, max_length=100),

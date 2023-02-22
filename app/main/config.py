@@ -11,23 +11,22 @@ class Config:
     DEBUG = False
     # Swagger
     RESTX_MASK_SWAGGER = False
-
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'comp_manager_main.db')
 
 
 class DevelopmentConfig(Config):
     # uncomment the line below to use postgres
     # SQLALCHEMY_DATABASE_URI = postgres_local_base
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'flask_boilerplate_main.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'comp_manager_dev.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
 
     JWT_SECRET_KEY = "super-app-secret"  # Change this in your code!
     JWT_TOKEN_LOCATION = ['cookies', 'headers']
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
     JWT_REFRESH_COOKIE_NAME = "refresh_token_cookie"
-    JWT_COOKIE_CSRF_PROTECT = False # the bearer request works when this is False, but ideally it would be True
+    JWT_COOKIE_CSRF_PROTECT = False     # the bearer request works when this is False, but ideally it would be True
     JWT_CSRF_CHECK_FORM = True
     JWT_REFRESH_CSRF_HEADER_NAME = "X-CSRF-TOKEN"
     JWT_REFRESH_CSRF_FIELD_NAME = "csrf_token"
@@ -40,7 +39,7 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     DEBUG = True
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'flask_boilerplate_test.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'comp_manager_test.db')
     PRESERVE_CONTEXT_ON_EXCEPTION = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -64,13 +63,12 @@ class ProductionConfig(Config):
     # uncomment the line below to use postgres
     # SQLALCHEMY_DATABASE_URI = postgres_local_base
 
-
     JWT_SECRET_KEY = "super-app-secret"  # Change this in your code!
     JWT_TOKEN_LOCATION = ['cookies', 'headers']
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
     JWT_REFRESH_COOKIE_NAME = "refresh_token_cookie"
-    JWT_COOKIE_CSRF_PROTECT = False # the bearer request works when this is False, but ideally it would be True
+    JWT_COOKIE_CSRF_PROTECT = False     # the bearer request works when this is False, but ideally it would be True
     JWT_CSRF_CHECK_FORM = True
     JWT_REFRESH_CSRF_HEADER_NAME = "X-CSRF-TOKEN"
     JWT_REFRESH_CSRF_FIELD_NAME = "csrf_token"

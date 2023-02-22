@@ -57,7 +57,7 @@ class Register(Resource):
 @api.route('/refresh')
 class RefreshResource(Resource):
     """
-    Refereshes the use token
+    Refreshes the use token
     """
 
     @api.doc('Refresh a user token')

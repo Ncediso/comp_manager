@@ -3,8 +3,8 @@ from flask_restx import Resource
 # from flask_jwt_extended import jwt_required
 
 from app.main.app_utils.decorators import admin_token_required
-from ..app_utils.dto import UserDto
-from ..services.user_service import UserService
+from app.main.app_utils.dto import UserDto
+from app.main.services.user_service import UserService
 from typing import Dict, Tuple
 
 api = UserDto.api
@@ -13,6 +13,7 @@ _user = UserDto.user
 
 @api.route('/')
 class UserList(Resource):
+
     @api.doc('list_of_registered_users')
     @admin_token_required
     @api.marshal_list_with(_user, envelope='data')
@@ -33,6 +34,7 @@ class UserList(Resource):
 @api.param('public_id', 'The User identifier')
 @api.response(404, 'User not found.')
 class User(Resource):
+
     @api.doc('get a user')
     @api.marshal_with(_user, envelope="user", code=200)
     def get(self, public_id):

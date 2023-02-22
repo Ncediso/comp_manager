@@ -1,7 +1,16 @@
 import os
 import unittest
 from datetime import datetime, timezone, timedelta
+
 from flask_jwt_extended import JWTManager
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import set_access_cookies
+from flask_jwt_extended import unset_jwt_cookies
+
 # import flask_migrate
 from flask_migrate import Migrate  # , MigrateCommand
 # from flask_script import Manager
@@ -10,14 +19,6 @@ from app import blueprint, api
 from app.main import create_app, db
 from app.main.models import user, blacklist
 from app.main.services.data_seeding_helper import DataSeeder
-
-from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import get_jwt
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_required
-from flask_jwt_extended import set_access_cookies
-from flask_jwt_extended import unset_jwt_cookies
 
 _app = create_app(os.getenv('BOILERPLATE_ENV') or 'dev')
 
@@ -78,7 +79,7 @@ def test():
 @_app.cli.command('db_seed')
 def db_seed():
     DataSeeder.seed_roles()
-    DataSeeder.seed_services()
+    # DataSeeder.seed_services()
 
 
 if __name__ == '__main__':
