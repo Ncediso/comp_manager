@@ -1,5 +1,5 @@
-import os
 from datetime import timedelta
+import os
 # uncomment the line below for postgres database url from environment variable
 # postgres_local_base = os.environ['DATABASE_URL']
 

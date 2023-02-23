@@ -1,9 +1,9 @@
 from functools import wraps
+from typing import Callable
 
 from flask import request
 
 from app.main.services.auth_helper import Auth
-from typing import Callable
 
 
 def token_required(f) -> Callable:

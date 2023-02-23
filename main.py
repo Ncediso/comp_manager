@@ -1,17 +1,9 @@
+from datetime import datetime, timezone, timedelta
 import os
 import unittest
-from datetime import datetime, timezone, timedelta
 
-from flask_jwt_extended import JWTManager
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import get_jwt
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
-from flask_jwt_extended import jwt_required
-from flask_jwt_extended import set_access_cookies
-from flask_jwt_extended import unset_jwt_cookies
+from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, JWTManager, set_access_cookies
 
-# import flask_migrate
 from flask_migrate import Migrate  # , MigrateCommand
 # from flask_script import Manager
 

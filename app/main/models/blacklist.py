@@ -1,4 +1,4 @@
-from .. import db
+from app.main import db
 import datetime
 from .base_mixins import Model
 

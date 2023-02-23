@@ -5,7 +5,7 @@ import re
 
 from flask import url_for, current_app
 
-from .. import db
+from app.main import db
 
 
 LOGGER = logging.getLogger(__name__)

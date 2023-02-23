@@ -5,7 +5,7 @@ from flask_restx import Resource
 from flask_jwt_extended import jwt_required
 
 from app.main.services.auth_helper import Auth
-from ..app_utils.dto import AuthDto
+from app.main.app_utils.dto import AuthDto
 from typing import Dict, Tuple
 
 api = AuthDto.api
