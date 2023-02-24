@@ -1,11 +1,9 @@
-
 import datetime
 import logging
-from flask import jsonify, make_response
+from typing import Dict, Tuple
 
 from app.main import db
 from app.main.models.user import User
-from typing import Dict, Tuple
 
 LOGGER = logging.getLogger(__name__)
 
@@ -13,7 +11,7 @@ LOGGER = logging.getLogger(__name__)
 class UserService:
     
     @classmethod
-    def create_admin():
+    def create_admin(cls):
         """Creates the admin user."""
         if User.query.all() is None:
             new_user = User(

@@ -1,11 +1,10 @@
-from flask import request, make_response, jsonify
+from flask import jsonify, make_response, request
 from flask_restx import Resource
 # from flask_jwt_extended import jwt_required
 
 from app.main.app_utils.decorators import admin_token_required
 from app.main.app_utils.dto import UserDto
 from app.main.services.user_service import UserService
-from typing import Dict, Tuple
 
 api = UserDto.api
 _user = UserDto.user
