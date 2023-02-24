@@ -24,7 +24,7 @@ class FAConnectionStatus(Resource):
             make_response(jsonify({"msg": connection_status}))
         except Exception as error:
             LOGGER.exception(error)
-            return jsonify(jsonify({"msg": "Failed to check status of Front Arena Connection"}), 500)
+            return make_response(jsonify({"msg": "Failed to check status of Front Arena Connection"}), 500)
 
 
 @api.route('/connect')

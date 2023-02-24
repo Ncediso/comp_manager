@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, make_response, jsonify
 from flask_restx import Resource
 # from flask_jwt_extended import jwt_required
 
@@ -16,18 +16,20 @@ class UserList(Resource):
 
     @api.doc('list_of_registered_users')
     @admin_token_required
-    @api.marshal_list_with(_user, envelope='data')
+    @api.marshal_list_with(_user, envelope='data', code=200)
     def get(self):
         """List all registered users"""
-        return UserService.get_all_users()
+        all_users = UserService.get_all_users()
+        return make_response(jsonify(all_users), 200)
 
     @api.expect(_user, validate=True)
     @api.response(201, 'User successfully created.')
     @api.doc('create a new user')
-    def post(self) -> Tuple[Dict[str, str], int]:
+    def post(self):
         """Creates a new User """
         data = request.json
-        return UserService.save_new_user(data=data)
+        response, status = UserService.save_new_user(data=data)
+        return make_response(jsonify(response), status)
 
 
 @api.route('/<public_id>')
@@ -43,7 +45,7 @@ class User(Resource):
         if user is None:
             api.abort(404)
         else:
-            return user, 200
+            return make_response(jsonify(user), 200)
     
     @api.doc('updates a user')
     @api.marshal_with(UserDto.user_update, envelope="user", code=200)
@@ -55,4 +57,4 @@ class User(Resource):
         else:
             req_data = request.get_json()
             user.update(req_data)
-            return user, 200
+            return make_response(jsonify(user), 200)

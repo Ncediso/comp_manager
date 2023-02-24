@@ -50,7 +50,6 @@ class UserService:
         new_user.save()
         return {"message": "User created successfully"}, 201
 
-
     @staticmethod
     def get_all_users():
         return User.query.all()
