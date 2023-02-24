@@ -26,14 +26,15 @@ class Auth:
             if db_user and db_user.check_password(password):
                 access_token = create_access_token(identity=db_user.email)
                 refresh_token = create_refresh_token(identity=db_user.email)
-                response = make_response(jsonify({
+                response = {
                     "access_token": access_token,
                     "refresh_token": refresh_token,
-                    "msg": "login successful"}))
-                set_access_cookies(response, access_token)
-                return response
+                    "msg": "login successful"
+                }
+                set_access_cookies(make_response(response), access_token)
+                return response, 200
             else:
-                return jsonify({"msg": "Invalid username or password"})
+                return {"msg": "Invalid username or password"}, 401
 
         except Exception as e:
             LOGGER.exception(e)
@@ -102,11 +103,11 @@ class Auth:
 
     @staticmethod
     def register_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
-        response_object = UserService.save_new_user(data=data)
-        return response_object
+        response_object, status = UserService.save_new_user(data=data)
+        return response_object, status
 
     @staticmethod
     def refresh_token(data: str):
         current_user = get_jwt_identity()
         new_access_token = create_access_token(identity=current_user)
-        return make_response(jsonify({"access_token": new_access_token}), 200)
+        return {"access_token": new_access_token}, 200

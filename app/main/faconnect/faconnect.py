@@ -44,37 +44,31 @@ class FAConnect:
 
     def __init__(self, env_name=None, username=None, password=None, archive_mode=False, historical_date=None, date_today=None):
 
+        self.use_ini = None
+        self.ini_file_path = None
+        self.ael_python_path = None
         self.config_handler = None
         self.principal = None
         self.session = None
         self.app = None
         self.amas_pass = None
+        self.ads_url = None
+        self.server = None
+        self.port = None
+        self.single_sign_on = None
+
         self._sections = OrderedDict()
         self._dict = OrderedDict
         self._defaults = OrderedDict()
         self._optcre = self.OPTCRE
+
         self.archive = archive_mode
         self.historical_date = historical_date
         self.date_today = date_today
-        self.ads_url = None
-
-        self.server = os.environ["FRONT_SERVER"]
-        self.port = os.environ["FRONT_PORT"]
-        self.single_sign_on = bool(os.environ["SSO"])
-        self.env_name = os.environ["FRONT_ENVIRONMENT"] if not env_name else env_name
-        self.password = os.environ["PASSWORD"] if not self.single_sign_on else None
-        self.username = os.environ["USERNAME"]
-        self.ael_python_path = os.environ["AEL_PYTHON_PATH"]
-        self.ini_file_path = os.environ["INI_FILE_PATH"]
-
-        FAConnect.AEL_PYTHON_PATH = self.ael_python_path
-        sys.path.append(self.ael_python_path)
+        self.env_name = env_name
 
         if username:
             self.username = username
-        if not username and self.single_sign_on:
-            self.username = getpass.getuser()
-
         if password:
             self.password = password
 
@@ -113,11 +107,38 @@ class FAConnect:
             raise ValueError("No server/environment provided")
 
     def connect(self):
-        self._ads_url()
+        LOGGER.info("About to connect")
+
+        error = self.validate_environment_variables()
+        if error:
+            if error['type'] == 'type':
+                raise TypeError(error['msg'])
+            if error['type'] == 'value':
+                raise ValueError(error['msg'])
+
+        self.ael_python_path = os.environ["AEL_PYTHON_PATH"]
+        FAConnect.AEL_PYTHON_PATH = self.ael_python_path
+        sys.path.append(self.ael_python_path)
+
         import acm
         import ael
 
-        LOGGER.info("About to connect")
+        self.use_ini = os.environ["USE_INI"]
+        if bool(self.use_ini) is False:
+            self.server = os.environ["FRONT_SERVER"]
+            self.port = os.environ["FRONT_PORT"]
+        else:
+            self.ini_file_path = os.environ["INI_FILE_PATH"]
+            self.env_name = os.environ["FRONT_ENVIRONMENT"] if not self.env_name else env_name
+
+        self._ads_url()
+
+        self.username = os.environ["USERNAME"]
+        self.single_sign_on = bool(os.environ["SSO"])
+        self.password = os.environ["PASSWORD"] if self.single_sign_on is False else None
+
+        if not self.username and self.single_sign_on:
+            self.username = getpass.getuser()
 
         if self.date_today:
             ael.date_today = self.date_today
@@ -126,8 +147,9 @@ class FAConnect:
             ael.historical_date = self.historical_date
             acm.Time.SetHistoricalDate(self.historical_date)
 
-        if self.password:
-            self.single_sign_on = False
+        # if self.password:
+        #     self.single_sign_on = False
+
         con = acm.Connect(self.ads_url, self.username, self.password, self.amas_pass, self.app, self.archive, self.session,
                           self.principal, self.config_handler, self.single_sign_on)
 
@@ -274,3 +296,48 @@ class FAConnect:
     def is_connected(self):
         import acm
         return acm.IsConnected()
+
+    @staticmethod
+    def validate_environment_variables():
+        if "AEL_PYTHON_PATH" not in os.environ:
+            return {"type": "value", "msg": "Missing Front Arena AEL python path"}
+
+        if "USE_INI" not in os.environ:
+            return {"type": "value", "msg": "Missing specifier for using INI File"}
+
+        use_ini = os.environ["SSO"]
+        try:
+            bool(use_ini)
+        except Exception as err:
+            message = "Expected type 'boolean' value for Use INI file, found type '{}'\n {}"
+            return {"type": "type", "msg": message.format(type(use_ini), err)}
+
+        if os.environ["USE_INI"] and "INI_FILE_PATH" not in os.environ:
+            return {"type": "value", "msg": "Missing Front Arena Path to INI File"}
+
+        if os.environ["USE_INI"] is False:
+            if "FRONT_SERVER" not in os.environ:
+                return {"type": "value", "msg": "Missing Front Arena Server"}
+
+            if "FRONT_PORT" not in os.environ:
+                return {"type": "value", "msg": "Missing Front Arena Server Port"}
+
+        if "INI_FILE_PATH" in os.environ and "FRONT_ENVIRONMENT" not in os.environ:
+            return {"type": "value", "msg": "Missing Front Arena environment"}
+
+        if "USERNAME" not in os.environ:
+            return {"type": "value", "msg": "Missing Front Arena username"}
+
+        if "SSO" not in os.environ:
+            return {"type": "value", "msg": "Missing Single Sign On"}
+
+        sso = os.environ["SSO"]
+        try:
+            bool(sso)
+        except Exception as err:
+            raise {"type": "value", "msg": "Expected 'boolean' value for SSO found '{}'\n {}".format(type(sso), err)}
+
+        if bool(os.environ["SSO"]) is False and "PASSWORD" not in os.environ:
+            return {"type": "value", "msg": "Missing Password"}
+        LOGGER.info("Successfully validated all configurations.")
+        return None

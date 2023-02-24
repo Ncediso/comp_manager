@@ -37,7 +37,7 @@ class UserService:
         if user is not None:
             message = f"User with username {email} already exists"
             LOGGER.info(message)
-            return jsonify({"message": message})
+            return {"message": message}, 403
         
         new_user = User(
             email=data['email'],
@@ -48,7 +48,7 @@ class UserService:
         )
 
         new_user.save()
-        return make_response(jsonify({"message": "User created successfuly"}), 201)
+        return {"message": "User created successfully"}, 201
 
 
     @staticmethod

@@ -1,6 +1,7 @@
 set USERNAME=AB012FT
 set PASSWORD=Password1000
 set SSO=1
+set USE_INI=0
 set INI_FILE_PATH=\\nciispr01\Arena\ini
 set AEL_PYTHON_PATH=\\nciispr01\Arena\PRIME\2022.4
 set FRONT_ENVIRONMENT='Playground_dev1'
@@ -11,6 +12,7 @@ set FLASK_APP=main.py
 export USERNAME=AB012FT
 export PASSWORD=Password1000
 export SSO=1
+export USE_INI=0
 export INI_FILE_PATH=\\nciispr01\Arena\ini
 export AEL_PYTHON_PATH=\\nciispr01\Arena\PRIME\2022.4
 export FRONT_ENVIRONMENT='Playground_dev1'
