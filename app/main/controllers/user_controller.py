@@ -3,7 +3,7 @@ from flask_restx import Resource
 # from flask_jwt_extended import jwt_required
 
 from app.main.app_utils.decorators import admin_token_required
-from app.main.app_utils.dto import UserDto
+from app.main.app_utils import UserDto
 from app.main.services.user_service import UserService
 
 api = UserDto.api

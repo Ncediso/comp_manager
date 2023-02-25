@@ -1,9 +1,9 @@
 from flask_restx import Api
 from flask import Blueprint
 
-from .main.controllers.user_controller import api as user_ns
-from .main.controllers.auth_controller import api as auth_ns
-from .main.controllers.fa_connect_controller import api as fa_connect_ns
+from app.main.controllers import user_ns
+from app.main.controllers import auth_ns
+from app.main.controllers import fa_connect_ns
 
 blueprint = Blueprint('api', __name__)
 authorizations = {

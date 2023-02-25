@@ -1,8 +1,6 @@
-import datetime
 import logging
 from typing import Dict, Tuple
 
-from app.main import db
 from app.main.models.user import User
 
 LOGGER = logging.getLogger(__name__)

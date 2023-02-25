@@ -4,9 +4,9 @@ import logging
 import jwt
 from typing import Union
 
-from app.main.models.blacklist import BlacklistToken
+from app.main.models import BlacklistToken
+from app.main.models import Model
 from ..config import key
-from .base_mixins import Model
 from .. import db, flask_bcrypt
 # from sqlalchemy.orm import relationship
 
@@ -40,19 +40,16 @@ class User(Model):
     authenticated = db.Column(db.Boolean, default=False)
     active = db.Column(db.Boolean, default=True)
 
-    def __init__(self, email, password, username, admin=False, access=Access.USER, last_name=None, first_name=None):
+    def __init__(self, email, password, username, last_name=None, first_name=None, admin=False):
         """"""
         Model.__init__(self)
+        self.email = email
         self.first_name = first_name
         self.last_name = last_name
-        self.email = email
         self.password = password
         self.username = username
         self.admin = admin
-        self.access = access
         self.registered_on = datetime.now()
-        if access == Access.ADMIN:
-            self.admin = True
 
     @property
     def password(self):

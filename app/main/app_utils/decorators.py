@@ -3,7 +3,7 @@ from typing import Callable
 
 from flask import request
 
-from app.main.services.auth_helper import Auth
+from app.main.services import Auth
 
 
 def token_required(f) -> Callable:

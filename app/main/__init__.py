@@ -5,7 +5,6 @@ from flask_cors import CORS
 from .config import config_by_name
 from flask.app import Flask
 
-
 db = SQLAlchemy()
 flask_bcrypt = Bcrypt()
 

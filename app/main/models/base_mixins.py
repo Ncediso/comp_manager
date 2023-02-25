@@ -4,6 +4,7 @@ import uuid
 import re
 
 from flask import url_for, current_app
+from flask_jwt_extended import current_user
 
 from app.main import db
 
@@ -118,13 +119,15 @@ class CRUDMixin(object):
     
     update_time = db.Column(db.DateTime(timezone=True))
     create_time = db.Column(db.DateTime(timezone=True))
-    public_id = db.Column(db.String(100), unique=True)
+    id = db.Column(db.String(100), unique=True)
     
     def __init__(self):
         """"""
         self.update_time = datetime.now()
+        self.update_user_id = current_user
         self.create_time = datetime.now()
-        self.public_id = str(uuid.uuid4())
+        self.create_user_id = current_user
+        self.id = str(uuid.uuid4())
         
     @classmethod
     def create(cls, **kwargs):
@@ -231,4 +234,4 @@ class Model(CRUDMixin, FunctionsMixin, db.Model):
         super().__init__()
         CRUDMixin().__init__()
         FunctionsMixin().__init__()
-        self.public_id = str(uuid.uuid4())
+        self.id = str(uuid.uuid4())
