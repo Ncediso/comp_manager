@@ -1,13 +1,14 @@
 from datetime import datetime, timedelta
 import logging
+from typing import Union
+import uuid
 
 import jwt
-from typing import Union
 
-from app.main.models import BlacklistToken
-from app.main.models import Model
+from ..models.blacklist import BlacklistToken
+from app.main.models.base_mixins import Model
 from ..config import key
-from .. import db, flask_bcrypt
+from app.main import db, flask_bcrypt
 # from sqlalchemy.orm import relationship
 
 
@@ -22,6 +23,7 @@ class Access:
 
 class User(Model):
     """ User Model for storing user related details """
+
     __tablename__ = "users"
 
     email = db.Column(db.String(255), unique=True, nullable=False)
@@ -31,8 +33,7 @@ class User(Model):
     gender = db.Column(db.String(20))
     phone = db.Column(db.String(100))
     title = db.Column(db.String(20))
-    access = db.Column(db.Integer)
-    
+
     registered_on = db.Column(db.DateTime, nullable=False)
     admin = db.Column(db.Boolean, nullable=False, default=False)
     
@@ -94,10 +95,10 @@ class User(Model):
         return initials
 
     def is_admin(self):
-        return self.access == Access.ADMIN and self.admin
+        return self.admin
     
-    def allowed(self, access_level):
-        return self.access >= access_level
+    # def allowed(self, access_level):
+    #     return self.access >= access_level
 
     @staticmethod
     def encode_auth_token(user_id: int) -> bytes:
@@ -147,21 +148,66 @@ class User(Model):
 
 # Define the Role data-model
 class Role(Model):
-    __tablename__ = 'roles'
-    name = db.Column(db.String(50), unique=True)
 
-    def __init__(self, name):
+    __tablename__ = 'roles'
+
+    name = db.Column(db.String(50), unique=True)
+    description = db.Column(db.String(300), unique=True)
+    permissions = db.relationship('Permission', secondary='role_permissions', backref="roles", lazy="select")
+
+    def __init__(self, name, description):
         super().__init__()
         self.name = name
+        self.description = description
 
+    def jsonify(self):
+        perms_json = []
+        for perm in self.permissions:
+            perms_json.append(perm.to_json())
 
-# Define the UserRoles association table
-class UserRoles(Model):
-    __tablename__ = 'user_roles'
-    user_id = db.Column(db.Integer(), db.ForeignKey('user.id', ondelete='CASCADE'))
-    role_id = db.Column(db.Integer(), db.ForeignKey('roles.id', ondelete='CASCADE'))
+        data = {
+            'id': self.id,
+            'name': self.name,
+            'permissions': perms_json,
+        }
+        return data
 
 
 class Permission(Model):
-    def __init__(self):
+
+    __tablename__ = 'permissions'
+
+    name = db.Column(db.String(50), unique=True)
+    description = db.Column(db.String(100), unique=True)
+
+    def __init__(self, name, description):
         super().__init__()
+        self.name = name
+        self.description = description
+
+    def to_json(self):
+        data = {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+        }
+        return data
+
+
+# Define the UserRoles association table
+# handle many-to-many relation between Role and User
+class UserRoles(Model):
+
+    __tablename__ = 'user_roles'
+
+    user_id = db.Column(db.String(100), db.ForeignKey('users.id', ondelete='CASCADE'))
+    role_id = db.Column(db.String(100), db.ForeignKey('roles.id', ondelete='CASCADE'))
+
+
+# handle many-to-many relation between Permission and Role
+class RolePermissions(Model):
+
+    __tablename__ = 'role_permissions'
+
+    permissions_id = db.Column(db.String(100), db.ForeignKey("permissions.id"))
+    role_id = db.Column(db.String(100), db.ForeignKey("roles.id"))

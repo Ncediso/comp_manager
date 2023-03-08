@@ -1,3 +1,10 @@
+"""-------------------------
+MODULE:
+    app
+DESCRIPTION:
+    This package
+-------------------------
+"""
 from flask_restx import Api
 from flask import Blueprint
 

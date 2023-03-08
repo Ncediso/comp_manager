@@ -7,6 +7,8 @@ import sys
 import time
 import threading
 
+from ..app_utils import safe_get_env_var
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s", datefmt="%y%m%d %H%M%S")
 LOGGER = logging.getLogger(__name__)
 lock = threading.Lock()
@@ -116,26 +118,26 @@ class FAConnect:
             if error['type'] == 'value':
                 raise ValueError(error['msg'])
 
-        self.ael_python_path = os.environ["AEL_PYTHON_PATH"]
+        self.ael_python_path = os.environ["FA_AEL_PYTHON_PATH"]
         FAConnect.AEL_PYTHON_PATH = self.ael_python_path
         sys.path.append(self.ael_python_path)
 
         import acm
         import ael
 
-        self.use_ini = os.environ["USE_INI"]
+        self.use_ini = os.environ["FA_USE_INI"]
         if bool(self.use_ini) is False:
-            self.server = os.environ["FRONT_SERVER"]
-            self.port = os.environ["FRONT_PORT"]
+            self.server = os.environ["FA_SERVER"]
+            self.port = os.environ["FA_PORT"]
         else:
-            self.ini_file_path = os.environ["INI_FILE_PATH"]
-            self.env_name = os.environ["FRONT_ENVIRONMENT"] if not self.env_name else env_name
+            self.ini_file_path = os.environ["FA_INI_FILE_PATH"]
+            self.env_name = os.environ["FA_ENVIRONMENT"] if not self.env_name else self.env_name
 
         self._ads_url()
 
-        self.username = os.environ["USERNAME"]
-        self.single_sign_on = bool(os.environ["SSO"])
-        self.password = os.environ["PASSWORD"] if self.single_sign_on is False else None
+        self.username = os.environ["FA_USERNAME"]
+        self.single_sign_on = bool(os.environ["FA_SSO"])
+        self.password = os.environ["FA_PASSWORD"] if self.single_sign_on is False else None
 
         if not self.username and self.single_sign_on:
             self.username = getpass.getuser()
@@ -299,10 +301,10 @@ class FAConnect:
 
     @staticmethod
     def validate_environment_variables():
-        if "AEL_PYTHON_PATH" not in os.environ:
+        if "FA_AEL_PYTHON_PATH" not in os.environ:
             return {"type": "value", "msg": "Missing Front Arena AEL python path"}
 
-        if "USE_INI" not in os.environ:
+        if "FA_USE_INI" not in os.environ:
             return {"type": "value", "msg": "Missing specifier for using INI File"}
 
         use_ini = os.environ["SSO"]
@@ -312,32 +314,32 @@ class FAConnect:
             message = "Expected type 'boolean' value for Use INI file, found type '{}'\n {}"
             return {"type": "type", "msg": message.format(type(use_ini), err)}
 
-        if os.environ["USE_INI"] and "INI_FILE_PATH" not in os.environ:
+        if os.environ["FA_USE_INI"] and "FA_INI_FILE_PATH" not in os.environ:
             return {"type": "value", "msg": "Missing Front Arena Path to INI File"}
 
-        if os.environ["USE_INI"] is False:
+        if os.environ["FA_USE_INI"] is False:
             if "FRONT_SERVER" not in os.environ:
                 return {"type": "value", "msg": "Missing Front Arena Server"}
 
             if "FRONT_PORT" not in os.environ:
                 return {"type": "value", "msg": "Missing Front Arena Server Port"}
 
-        if "INI_FILE_PATH" in os.environ and "FRONT_ENVIRONMENT" not in os.environ:
+        if "FA_INI_FILE_PATH" in os.environ and "FRONT_ENVIRONMENT" not in os.environ:
             return {"type": "value", "msg": "Missing Front Arena environment"}
 
-        if "USERNAME" not in os.environ:
+        if "FA_USERNAME" not in os.environ:
             return {"type": "value", "msg": "Missing Front Arena username"}
 
-        if "SSO" not in os.environ:
+        if "FA_SSO" not in os.environ:
             return {"type": "value", "msg": "Missing Single Sign On"}
 
-        sso = os.environ["SSO"]
+        sso = os.environ["FA_SSO"]
         try:
             bool(sso)
         except Exception as err:
             raise {"type": "value", "msg": "Expected 'boolean' value for SSO found '{}'\n {}".format(type(sso), err)}
 
-        if bool(os.environ["SSO"]) is False and "PASSWORD" not in os.environ:
-            return {"type": "value", "msg": "Missing Password"}
+        if bool(os.environ["FA_SSO"]) is False and "FA_PASSWORD" not in os.environ:
+            return {"type": "value", "msg": "Missing Front Arena Password"}
         LOGGER.info("Successfully validated all configurations.")
         return None

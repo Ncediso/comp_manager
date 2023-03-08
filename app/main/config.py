@@ -18,7 +18,8 @@ class DevelopmentConfig(Config):
     # uncomment the line below to use postgres
     # SQLALCHEMY_DATABASE_URI = postgres_local_base
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'comp_manager_dev.db')
+    # SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'comp_manager_dev.db')
+    SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://SA:P@s$w0rd1O0o@server/comp_manager_dev?driver=SQL+Server'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     JWT_SECRET_KEY = "super-app-secret"  # Change this in your code!

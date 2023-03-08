@@ -1,7 +1,7 @@
-from app.main import db
-
-from app.main.models.blacklist import BlacklistToken
 from typing import Dict, Tuple
+
+from app.main import db
+from app.main.models import BlacklistToken
 
 
 class BlackListServices:

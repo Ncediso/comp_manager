@@ -1,0 +1,10 @@
+VARS = dict()
+VARS["FA_USE_INI"] = ""
+VARS["FA_INI_FILE_PATH"] = ""
+VARS["FA_SERVER"] = ""
+VARS["FA_PORT"] = ""
+VARS["FA_USERNAME"] = ""
+VARS["FA_SSO"] = ""
+VARS["FA_PASSWORD"] = "Missing Front Arena Password"
+VARS["FA_AEL_PYTHON_PATH"] = ""
+VARS["USE_INI"] = ""

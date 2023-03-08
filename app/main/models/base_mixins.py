@@ -117,10 +117,10 @@ class PaginatedAPIMixin(object):
 class CRUDMixin(object):
     """Mixin that adds convenience methods for CRUD (create, read, update, delete) operations."""
     
+    id = db.Column(db.String(100), primary_key=True, default=uuid.uuid4, unique=True)
     update_time = db.Column(db.DateTime(timezone=True))
     create_time = db.Column(db.DateTime(timezone=True))
-    id = db.Column(db.String(100), unique=True)
-    
+
     def __init__(self):
         """"""
         self.update_time = datetime.now()
@@ -163,8 +163,8 @@ class FunctionsMixin(object):
 
     __table_args__ = {'extend_existing': True}
 
-    id = db.Column(db.Integer, primary_key=True)
-    
+    id = db.Column(db.String(100), primary_key=True, default=uuid.uuid4, unique=True)
+
     def __init__(self):
         pass
     
@@ -182,7 +182,7 @@ class FunctionsMixin(object):
         
         return True
             
-    def json(self):
+    def to_json(self):
         json_data = {}
         for key, value in self.__dict__.items():
             if callable(value) or self._is_attriute_key(key) is False:
@@ -203,18 +203,14 @@ class FunctionsMixin(object):
     
     @classmethod
     def get_object_json_by_id(cls, record_id):
-        '''function to get object using the id of the object as parameter'''
-        return cls.json(cls.query.filter_by(id=record_id).first())
-    
-    
+        """Function to get object using the id of the object as parameter"""
+        return cls.to_json(cls.query.filter_by(id=record_id).first())
+
     @classmethod
     def get_all_objects(cls):
-        '''function to get all objects on the table in our database'''
-        return [cls.json(item) for item in cls.query.all()]
+        """function to get all objects on the table in our database"""
+        return [cls.to_json(item) for item in cls.query.all()]
 
-    # def to_json(self):
-    #     passs
-    
     def __str__(self):
         return_value = f"{self.__class__.__name__}"
         """"""
@@ -235,3 +231,6 @@ class Model(CRUDMixin, FunctionsMixin, db.Model):
         CRUDMixin().__init__()
         FunctionsMixin().__init__()
         self.id = str(uuid.uuid4())
+
+    def __repr__(self):
+        return '<{} {}>'.format(self.__class__.__name__, self.id)

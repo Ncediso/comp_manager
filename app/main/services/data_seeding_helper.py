@@ -1,6 +1,6 @@
 # from .services_helper import ServiceHelper
-from ..models.user import Role
-from .user_service import UserService
+from app.main.models import Role
+from app.main.services.user_service import UserService
 
 
 class DataSeeder(object):

@@ -1,15 +1,16 @@
-from app.main import db
 import datetime
-from .base_mixins import Model
+
+from ...main import db
+from ..models.base_mixins import Model
 
 
 class BlacklistToken(Model):
     """
     Token Model for storing JWT tokens
     """
+
     __tablename__ = 'blacklist_tokens'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     token = db.Column(db.String(500), unique=True, nullable=False)
     blacklisted_on = db.Column(db.DateTime, nullable=False)
 

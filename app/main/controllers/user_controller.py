@@ -57,3 +57,17 @@ class User(Resource):
             req_data = request.get_json()
             user.update(req_data)
             return make_response(jsonify(user), 200)
+
+
+@api.route('/<id>')
+class UserRoles(Resource):
+    @api.doc('Get user roles')
+    def get(self, user_id):
+        user = UserService.get_a_user(user_id)
+        if user is None:
+            api.abort(404)
+
+    @api.doc('')
+    def put(self, user_id):
+        pass
+

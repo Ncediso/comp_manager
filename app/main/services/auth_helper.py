@@ -1,14 +1,14 @@
+import logging
+from typing import Dict, Tuple
+
 from flask import jsonify, make_response
 from flask_jwt_extended import create_access_token, create_refresh_token
-
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import unset_jwt_cookies, set_access_cookies
 
-from app.main.models.user import User
-from ..services.blacklist_service import BlackListServices
-from ..services.user_service import UserService
-from typing import Dict, Tuple
-import logging
+from ..models import User
+from app.main.services.blacklist_service import BlackListServices
+from app.main.services.user_service import UserService
 
 
 LOGGER = logging.getLogger(__name__)

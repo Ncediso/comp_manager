@@ -13,6 +13,10 @@ jwt = "*"
 flask-jwt = "*"
 flask-bcrypt = "*"
 flask-sqlalchemy = "*"
+pyodbc = "*"
+sqlalchemy = "*"
+flask-cors = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
