@@ -1,41 +1,42 @@
 import logging
 from typing import Dict, Tuple
+from ..app_utils import NotFound
 
-
-from app.main.models.user import User
+from app.main.models.user import User, UserRoles
+from .roles_service import RolesService
 
 LOGGER = logging.getLogger(__name__)
 
 
 class UserService:
-    
+
     @classmethod
     def create_admin(cls):
         """Creates the admin user."""
-        if User.query.all() is None:
-            new_user = User(
-                username="admin@fawld.com", 
-                email="admin@fawld.com",
-                password="Admin@2011",
-                last_name="Fawld",
-                first_name="Admin",
-                admin=True)
-            
-            new_user.save()
+        if User.get_all():
+            LOGGER.info("Users table is not Empty, You will need an empty user table to create an Admin User")
             return
-            
-        LOGGER.info("Users table is not Empty, You will need an empty user table to create an Admin User")
+
+        new_user = User(
+            username="admin@fawld.com",
+            email="admin@fawld.com",
+            password="Admin@2011",
+            last_name="Fawld",
+            first_name="Admin",
+            admin=True)
+
+        new_user.save()
 
     @classmethod
     def save_new_user(cls, data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
         email = data['email']
         user = User.query.filter_by(email=data['email']).first()
-        
+
         if user is not None:
             message = f"User with username {email} already exists"
             LOGGER.info(message)
             return {"message": message}, 403
-        
+
         new_user = User(
             email=data['email'],
             username=data['username'],
@@ -49,11 +50,11 @@ class UserService:
 
     @staticmethod
     def get_all_users():
-        return User.query.all()
+        return User.get_all()
 
     @staticmethod
-    def get_a_user(public_id):
-        return User.get_object_by_public_id(public_id)
+    def get_a_user(user_id):
+        return User.get_object_by_id(user_id)
 
     @staticmethod
     def generate_token(user: User) -> Tuple[Dict[str, str], int]:
@@ -72,3 +73,20 @@ class UserService:
                 'message': 'Some error occurred. Please try again.'
             }
             return response_object, 401
+
+    @classmethod
+    def assign_role(cls, user_id, role_name):
+        user = cls.get_a_user(user_id)
+        if not user:
+            raise NotFound(f"User with id {user_id} not found")
+        role = RolesService.get_role_by_name(role_name)
+        if not role:
+            raise NotFound(f"Role with name {role_name} not found")
+        user_role = UserRoles.query.filter_by(user_id=user_id, role_id=role.get_id()).first()
+        if not user_role:
+            user_role = UserRoles()
+            user_role.user_id = user_id,
+            user_role.role_id = role.get_id()
+            user_role.save()
+        else:
+            LOGGER.info("User Role already exist")

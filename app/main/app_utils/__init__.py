@@ -14,7 +14,7 @@ from flask import jsonify, abort
 from .dto import AuthDto, UserDto
 # from .decorators import token_required, admin_token_required
 from .constants import VARS
-
+from .custom_exceptions import NotFound
 
 # May have to move this function to a better place
 def json_abort(status_code, data=None):

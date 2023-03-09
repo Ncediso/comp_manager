@@ -31,16 +31,16 @@ class UserList(Resource):
         return make_response(jsonify(response), status)
 
 
-@api.route('/<public_id>')
-@api.param('public_id', 'The User identifier')
+@api.route('/<user_id>')
+@api.param('user_id', 'The User identifier')
 @api.response(404, 'User not found.')
 class User(Resource):
 
     @api.doc('get a user')
     @api.marshal_with(_user, envelope="user", code=200)
-    def get(self, public_id):
+    def get(self, user_id):
         """Get a user given its identifier"""
-        user = UserService.get_a_user(public_id)
+        user = UserService.get_a_user(user_id)
         if user is None:
             api.abort(404)
         else:

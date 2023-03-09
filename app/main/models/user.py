@@ -8,7 +8,7 @@ import jwt
 from ..models.blacklist import BlacklistToken
 from app.main.models.base_mixins import Model
 from ..config import key
-from app.main import db, flask_bcrypt
+from ...main import db, flask_bcrypt
 # from sqlalchemy.orm import relationship
 
 

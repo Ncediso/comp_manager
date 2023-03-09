@@ -11,7 +11,7 @@ class RolesService:
     @classmethod
     def save_new_role(cls, data: Dict) -> Tuple[Dict[str, str], int]:
 
-        role = Role.query.filter_by(name=data['name']).first()
+        role = Role.get_object_by_name(record_name=data['name'])
 
         if role is not None:
             message = f"The role {data['name']} already exists"
@@ -32,6 +32,10 @@ class RolesService:
     @staticmethod
     def get_a_role(role_id):
         return Role.get_object_by_id(role_id)
+
+    @classmethod
+    def get_role_by_name(cls, role_name):
+        return Role.get_object_by_name(role_name)
 
     @classmethod
     def get_role_permissions(cls, role_id):

@@ -70,8 +70,7 @@ def test():
 
 @_app.cli.command('db_seed')
 def db_seed():
-    DataSeeder.seed_roles()
-    # DataSeeder.seed_services()
+    DataSeeder.seed()
 
 
 if __name__ == '__main__':

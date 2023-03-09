@@ -196,20 +196,27 @@ class FunctionsMixin(object):
     @classmethod
     def get_object_by_id(cls, record_id):
         return cls.query.filter_by(id=record_id).first()
-    
+
     @classmethod
-    def get_object_by_public_id(cls, public_id):
-        return cls.query.filter_by(public_id=public_id).first()
-    
+    def get_object_by_name(cls, record_name):
+        if hasattr(cls, 'name') is False:
+            raise AttributeError(f"The attribute 'name' could not be found on object {cls.__name__}")
+        return cls.query.filter_by(name=record_name).first()
+
     @classmethod
     def get_object_json_by_id(cls, record_id):
         """Function to get object using the id of the object as parameter"""
-        return cls.to_json(cls.query.filter_by(id=record_id).first())
+        return cls.to_json(cls.get_object_by_id(record_id))
 
     @classmethod
-    def get_all_objects(cls):
+    def get_all(cls):
         """function to get all objects on the table in our database"""
-        return [cls.to_json(item) for item in cls.query.all()]
+        return cls.query.all()
+
+    @classmethod
+    def get_all_json(cls):
+        """function to get all objects on the table in our database"""
+        return [cls.to_json(item) for item in cls.get_all()]
 
     def __str__(self):
         return_value = f"{self.__class__.__name__}"
