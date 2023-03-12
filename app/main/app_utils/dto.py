@@ -71,7 +71,7 @@ class UserRoleDto:
 
 
 class RoleDto:
-    api = Namespace('role', description="Roles and Permissions related operations")
+    api = Namespace('role', description="Roles related operations")
     role = api.model('role', {
         'id': fields.String(description="user identifier"),
         'name': fields.String(required=True, min_length=1, max_length=100),
@@ -83,10 +83,9 @@ class RoleDto:
         'description': fields.String(required=True, min_length=4, max_length=100),
     })
 
-    assign_permission = api.model('assign_permission', {
-        'role_id': fields.String(required=True, min_length=1, max_length=100),
-        'permission_name': fields.String(required=True, min_length=4, max_length=100),
-    })
+
+class PermissionDto:
+    api = Namespace('permission', description="Permissions related operations")
 
     permission = api.model('permission', {
         'id': fields.String(description="permission identifier"),
@@ -102,5 +101,11 @@ class RoleDto:
     })
 
 
+class RolePermissionDto:
+    api = Namespace('role_permission', description="Roles and Permissions related operations")
+
+    assign_permission = api.model('assign_permission', {
+        'permission_name': fields.String(required=True, min_length=4, max_length=100),
+    })
 
 

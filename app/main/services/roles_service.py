@@ -65,3 +65,21 @@ class RolesService:
             role_permission.save()
         else:
             LOGGER.info("User Role already exist")
+
+    @classmethod
+    def remove_permission(cls, role_id, permission_name):
+        role = cls.get_a_role(role_id)
+        if not role:
+            raise NotFound(f"Role with id {role_id} not found")
+
+        permission = PermissionsServices.get_permission_by_name(permission_name)
+        if not permission:
+            raise NotFound(f"Permission with name {permission_name} not found")
+
+        role_permission = RolePermissions.query.filter_by(
+            permission_id=permission.get_id(),
+            role_id=role.get_id()).first()
+        if not role_permission:
+            raise NotFound(f"The Role {role_id} does not contain the Permission {permission_name}")
+
+        role_permission.delete()

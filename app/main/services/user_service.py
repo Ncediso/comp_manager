@@ -26,6 +26,7 @@ class UserService:
 
         cls.save_new_user(data)
         user = User.query.filter_by(email=data['email']).first()
+
         user.update(admin=True)
 
     @classmethod

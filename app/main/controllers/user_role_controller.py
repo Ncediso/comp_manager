@@ -16,7 +16,7 @@ class UserRolesList(Resource):
         raise NotImplementedError
 
 
-@api.route('/<id>')
+@api.route('/<user_id>')
 class UserRoles(Resource):
     @api.doc('Get user roles')
     def get(self, user_id):

@@ -11,7 +11,7 @@ from os import environ
 
 from flask import jsonify, abort
 
-from .dto import AuthDto, UserDto, UserRoleDto, RoleDto
+from .dto import AuthDto, PermissionDto, RoleDto, RolePermissionDto, UserDto, UserRoleDto
 # from .decorators import token_required, admin_token_required
 from .constants import VARS
 from .custom_exceptions import NotFound
