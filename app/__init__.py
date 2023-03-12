@@ -11,6 +11,8 @@ from flask import Blueprint
 from app.main.controllers import user_ns
 from app.main.controllers import auth_ns
 from app.main.controllers import fa_connect_ns
+from app.main.controllers import user_roles_ns
+from app.main.controllers import roles_ns
 
 blueprint = Blueprint('api', __name__)
 authorizations = {
@@ -34,3 +36,5 @@ api = Api(
 api.add_namespace(fa_connect_ns, path='/api/fa-connect')
 api.add_namespace(auth_ns, path='/api/auth')
 api.add_namespace(user_ns, path='/api/users')
+api.add_namespace(user_roles_ns, path='/api/user-roles')
+api.add_namespace(roles_ns, path='/api/roles')

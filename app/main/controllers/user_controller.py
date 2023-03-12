@@ -1,25 +1,32 @@
 from flask import jsonify, make_response, request
 from flask_restx import Resource
-# from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required
 
-from app.main.app_utils.decorators import admin_token_required
+from app.main.app_utils.decorators import admin_token_required, admin_required
 from app.main.app_utils import UserDto
 from app.main.services.user_service import UserService
 
 api = UserDto.api
 _user = UserDto.user
+# _u_de = UserDto.user_detail_list
 
 
 @api.route('/')
 class UserList(Resource):
 
     @api.doc('list_of_registered_users')
-    @admin_token_required
+    # @admin_required()
     @api.marshal_list_with(_user, envelope='data', code=200)
+    # @jwt_required()
     def get(self):
         """List all registered users"""
         all_users = UserService.get_all_users()
-        return make_response(jsonify(all_users), 200)
+        # all_users = UserService.get_all_users_to_json()
+        print(all_users)
+        # _users = jsonify(all_users)
+        # print(_users)
+        # return make_response(all_users, 200)
+        return all_users
 
     @api.expect(_user, validate=True)
     @api.response(201, 'User successfully created.')
@@ -44,30 +51,18 @@ class User(Resource):
         if user is None:
             api.abort(404)
         else:
-            return make_response(jsonify(user), 200)
-    
+            return user
+
+    @api.expect(_user, validate=True)
     @api.doc('updates a user')
-    @api.marshal_with(UserDto.user_update, envelope="user", code=200)
-    def put(self, public_id):
+    # @api.marshal_with(UserDto.user_update, envelope="user", code=200)
+    def put(self, user_id):
         """Update the user given its identifier"""
-        user = UserService.get_a_user(public_id)
+        user = UserService.get_a_user(user_id)
         if user is None:
             api.abort(404)
         else:
             req_data = request.get_json()
             user.update(req_data)
             return make_response(jsonify(user), 200)
-
-
-@api.route('/<id>')
-class UserRoles(Resource):
-    @api.doc('Get user roles')
-    def get(self, user_id):
-        user = UserService.get_a_user(user_id)
-        if user is None:
-            api.abort(404)
-
-    @api.doc('')
-    def put(self, user_id):
-        pass
 

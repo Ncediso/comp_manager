@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import logging
 from typing import Union
 import uuid
+from flask_jwt_extended import decode_token
 
 import jwt
 
@@ -95,7 +96,7 @@ class User(Model):
         return initials
 
     def is_admin(self):
-        return self.admin
+        return bool(self.admin)
     
     # def allowed(self, access_level):
     #     return self.access >= access_level
@@ -130,6 +131,10 @@ class User(Model):
         """
         
         try:
+            # print(auth_token)
+            print(1)
+            print(decode_token(auth_token))
+            print(2)
             payload = jwt.decode(auth_token, key, algorithms=['HS256'])
             is_blacklisted_token = BlacklistToken.check_blacklist(auth_token)
             if is_blacklisted_token:
@@ -141,6 +146,10 @@ class User(Model):
         except jwt.InvalidTokenError as error:
             LOGGER.exception(error)
             return 'Invalid token. Please log in again.'
+        except Exception as error:
+
+            LOGGER.exception(error)
+            raise
 
     def __repr__(self):
         return "<User '{}'>".format(self.username)

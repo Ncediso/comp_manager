@@ -7,10 +7,26 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = os.getenv('SECRET_KEY', 'my_precious_secret_key')
     DEBUG = False
-    # Swagger
+
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
+    JWT_BLACKLIST_ENABLED = True
+    JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
+    JWT_COOKIE_CSRF_PROTECT = False  # the bearer request works when this is False, but ideally it would be True
+    JWT_COOKIE_SECURE = False
+    JWT_CSRF_CHECK_FORM = True
+    JWT_HEADER_NAME = "Authorization"
+    JWT_HEADER_TYPE = "Bearer"
+    JWT_REFRESH_COOKIE_NAME = "refresh_token_cookie"
+    JWT_REFRESH_CSRF_HEADER_NAME = "X-CSRF-TOKEN"
+    JWT_REFRESH_CSRF_FIELD_NAME = "csrf_token"
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
+    JWT_TOKEN_LOCATION = ['cookies', 'headers']
+    JWT_SECRET_KEY = "super-app-secret"  # Change this in your code!
+
     RESTX_MASK_SWAGGER = False
+
+    SECRET_KEY = os.getenv('SECRET_KEY', 'my_precious_secret_key')
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'comp_manager_main.db')
 
 
@@ -35,6 +51,7 @@ class DevelopmentConfig(Config):
     JWT_HEADER_TYPE = "Bearer"
     JWT_COOKIE_SECURE = False
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
+    # JWT_FORM_KEY ='access_token'
 
 
 class TestingConfig(Config):
@@ -49,7 +66,7 @@ class TestingConfig(Config):
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
     JWT_REFRESH_COOKIE_NAME = "refresh_token_cookie"
-    JWT_COOKIE_CSRF_PROTECT = False # the bearer request works when this is False, but ideally it would be True
+    JWT_COOKIE_CSRF_PROTECT = False     # the bearer request works when this is False, but ideally it would be True
     JWT_CSRF_CHECK_FORM = True
     JWT_REFRESH_CSRF_HEADER_NAME = "X-CSRF-TOKEN"
     JWT_REFRESH_CSRF_FIELD_NAME = "csrf_token"

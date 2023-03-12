@@ -24,8 +24,16 @@ class Auth:
             password = data.get('password')
             db_user = User.query.filter_by(email=email).first()
             if db_user and db_user.check_password(password):
-                access_token = create_access_token(identity=db_user.email)
-                refresh_token = create_refresh_token(identity=db_user.email)
+                if db_user.is_admin:
+                    access_token = create_access_token(
+                        identity=db_user.email,
+                        additional_claims={"is_administrator": True})
+                    refresh_token = create_refresh_token(
+                        identity=db_user.email,
+                        additional_claims={"is_administrator": True})
+                else:
+                    refresh_token = create_refresh_token(identity=db_user.email)
+                    access_token = create_access_token(identity=db_user.email)
                 response = {
                     "access_token": access_token,
                     "refresh_token": refresh_token,
