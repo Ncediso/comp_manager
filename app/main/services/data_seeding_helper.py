@@ -21,16 +21,32 @@ DEFAULT_ROLES = [
 
 DEFAULT_PERMISSIONS = [
     {
-      "name": "FA Components",
-      "description": "Front Arena Components "
+      "name": "FA Profiles",
+      "description": "Front Arena Components"
     },
     {
       "name": "FA System User",
       "description": "Front Arena System User ",
     },
     {
-      "name": "FA Group Components",
-      "description": "Front Arena Group Components - allows users access to Front Arena User Groups",
+      "name": "FA System Group",
+      "description": "Front Arena System Group ",
+    },
+    {
+      "name": "FA System Organisation",
+      "description": "Front Arena System Organisation",
+    },
+    {
+      "name": "FA User Profiles",
+      "description": "Front Arena User Profiles - allows users access to Front Arena User Groups",
+    },
+    {
+      "name": "FA Group Profiles",
+      "description": "Front Arena Group Profiles - allows users access to Front Arena User Groups",
+    },
+    {
+      "name": "FA Move User to Group",
+      "description": "Front Arena Move User to Group - allows users move from one Group to another",
     }
 ]
 
@@ -45,7 +61,8 @@ class DataSeeder(object):
     @classmethod
     def seed_admin(cls):
         user = UserService.create_admin()
-        UserRolesService.assign_role(user.id, ADMIN_ROLE_NAME)
+        if user:
+            UserRolesService.assign_role(user.id, ADMIN_ROLE_NAME)
 
     @classmethod
     def seed_permissions(cls):

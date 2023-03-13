@@ -28,7 +28,7 @@ class User(Model):
     __tablename__ = "users"
 
     email = db.Column(db.String(255), unique=True, nullable=False)
-    username = db.Column(db.String(50), unique=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
     gender = db.Column(db.String(20))
@@ -161,7 +161,7 @@ class Role(Model):
     __tablename__ = 'roles'
 
     name = db.Column(db.String(50), unique=True)
-    description = db.Column(db.String(300), unique=True)
+    description = db.Column(db.String(300), nullable=False)
     permissions = db.relationship('Permission', secondary='role_permissions', backref="roles", lazy="select")
 
     def __init__(self, name, description):
@@ -187,7 +187,7 @@ class Permission(Model):
     __tablename__ = 'permissions'
 
     name = db.Column(db.String(50), unique=True)
-    description = db.Column(db.String(100), unique=True)
+    description = db.Column(db.String(300), nullable=False)
 
     def __init__(self, name, description):
         super().__init__()
