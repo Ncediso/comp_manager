@@ -17,6 +17,8 @@ class RolesList(Resource):
     def get(self):
         """Get List of all Roles"""
         roles = RolesService.get_all_roles()
+        roles2 = RolesService.get_all_roles_with_deleted()
+        print(roles2)
         return roles
 
     @api.expect(RoleDto.new_role)

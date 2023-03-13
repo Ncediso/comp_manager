@@ -65,7 +65,6 @@ class UserRoleDto:
     api = Namespace('user-roles', description='User Roles related operations')
 
     assign_role = api.model('assign_role', {
-        'user_id': fields.String(required=True, description='user identifier'),
         'role_name': fields.String(required=True, description='role name'),
     })
 
@@ -76,6 +75,8 @@ class RoleDto:
         'id': fields.String(description="user identifier"),
         'name': fields.String(required=True, min_length=1, max_length=100),
         'description': fields.String(required=True, min_length=4, max_length=100),
+        'create_time': fields.DateTime(required=True, description="Date and Time user was created on the system"),
+        'update_time': fields.DateTime(required=True, description="Date and Time user was updated on the system"),
     })
 
     new_role = api.model('new_role', {
@@ -107,5 +108,6 @@ class RolePermissionDto:
     assign_permission = api.model('assign_permission', {
         'permission_name': fields.String(required=True, min_length=4, max_length=100),
     })
+
 
 

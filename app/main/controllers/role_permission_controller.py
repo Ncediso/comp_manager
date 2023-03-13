@@ -3,13 +3,23 @@ from flask_restx import Resource
 from app.main.app_utils import RolePermissionDto, PermissionDto
 from app.main.services import RolesService, PermissionsServices
 
+from ..models.user import RolePermissions
 
 api = RolePermissionDto.api
 
 
-@api.route('/')
-@api.param('role_id', 'The Role identifier')
 class RolePermissionList(Resource):
+
+    def get(self):
+        return NotImplementedError()
+
+    def put(self):
+        raise NotImplementedError()
+
+
+@api.route('/<role_id>')
+@api.param('role_id', 'The Role identifier')
+class RolePermission(Resource):
 
     @api.doc('list_of_registered_permissions')
     @api.marshal_list_with(PermissionDto.permission, envelope='data', code=200)
@@ -28,6 +38,8 @@ class RolePermissionList(Resource):
             api.abort(404)
 
         RolesService.assign_permission(role_id, permission_name)
+        response = {'msg': f"Permission {permission_name} successfully assigned to Role"}
+        return make_response(jsonify(response), 201)
 
     @api.expect(RolePermissionDto.assign_permission, validate=True)
     def delete(self, role_id):
@@ -39,6 +51,8 @@ class RolePermissionList(Resource):
             api.abort(404)
 
         RolesService.remove_permission(role_id, permission_name)
+        response = {'msg': f"Permission {permission_name} successfully removed from Role"}
+        return make_response(jsonify(response), 201)
 
 
 

@@ -34,6 +34,10 @@ class RolesService:
         return Role.get_all()
 
     @staticmethod
+    def get_all_roles_with_deleted():
+        return Role.get_all_with_deleted()
+
+    @staticmethod
     def get_a_role(role_id):
         return Role.get_object_by_id(role_id)
 
