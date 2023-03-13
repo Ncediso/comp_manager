@@ -28,6 +28,7 @@ class UserService:
         user = User.query.filter_by(email=data['email']).first()
 
         user.update(admin=True)
+        return user
 
     @classmethod
     def save_new_user(cls, data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
