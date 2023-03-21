@@ -3,7 +3,7 @@ from flask_restx import Namespace, fields
 
 
 class UserDto:
-    api = Namespace('user', description="User related operations")
+    api = Namespace('User', description="User related operations")
     user = api.model('user', {
         'id': fields.String(description="user identifier"),
         'email': fields.String(required=True, description="user email address"),
@@ -48,7 +48,7 @@ class UserDto:
 
 
 class AuthDto:
-    api = Namespace('auth', description='Authentication related operations')
+    api = Namespace('Auth', description='Authentication related operations')
     user_auth = api.model('auth_details', {
         'email': fields.String(required=True, description='The email address'),
         'password': fields.String(required=True, description='The user password '),
@@ -62,7 +62,7 @@ class AuthDto:
 
 
 class UserRoleDto:
-    api = Namespace('user-roles', description='User Roles related operations')
+    api = Namespace('User Roles', description='User Roles related operations')
 
     assign_role = api.model('assign_role', {
         'role_name': fields.String(required=True, description='role name'),
@@ -70,7 +70,7 @@ class UserRoleDto:
 
 
 class RoleDto:
-    api = Namespace('role', description="Roles related operations")
+    api = Namespace('Role', description="Roles related operations")
     role = api.model('role', {
         'id': fields.String(description="user identifier"),
         'name': fields.String(required=True, min_length=1, max_length=100),
@@ -86,7 +86,7 @@ class RoleDto:
 
 
 class PermissionDto:
-    api = Namespace('permission', description="Permissions related operations")
+    api = Namespace('Permission', description="Permissions related operations")
 
     permission = api.model('permission', {
         'id': fields.String(description="permission identifier"),
@@ -103,7 +103,7 @@ class PermissionDto:
 
 
 class RolePermissionDto:
-    api = Namespace('role_permission', description="Roles and Permissions related operations")
+    api = Namespace('Role Permission', description="Roles and Permissions related operations")
 
     assign_permission = api.model('assign_permission', {
         'permission_name': fields.String(required=True, min_length=4, max_length=100),
@@ -111,7 +111,7 @@ class RolePermissionDto:
 
 
 class FAObjectsDto:
-    api = Namespace('fa-connect', description='Front Arena connection related endpoints')
+    api = Namespace('Front Arena Operations', description='Front Arena connection related endpoints')
 
     assign_user_profile = api.model('assign_user_profile', {
         'user_id': fields.String(required=True, min_length=4, max_length=100),
