@@ -56,18 +56,18 @@ class DataSeeder(object):
     @classmethod
     def seed_roles(cls):
         for data in DEFAULT_ROLES:
-            RolesService.save_new_role(data)
+            RolesService.create_role(data)
 
     @classmethod
     def seed_admin(cls):
-        user = UserService.create_admin()
+        user = UserService.create_admin_user()
         if user:
             UserRolesService.assign_role(user.id, ADMIN_ROLE_NAME)
 
     @classmethod
     def seed_permissions(cls):
         for permission_data in DEFAULT_PERMISSIONS:
-            PermissionsServices.save_new_permission(permission_data)
+            PermissionsServices.create_permission(permission_data)
 
     @classmethod
     def seed(cls):

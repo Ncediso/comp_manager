@@ -1,7 +1,7 @@
 import logging
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 
-from ..models.user import Permission, RolePermissions
+from ..models.user import Permission, RolePermissions, Role
 
 
 LOGGER = logging.getLogger(__name__)
@@ -10,7 +10,7 @@ LOGGER = logging.getLogger(__name__)
 class PermissionsServices:
 
     @classmethod
-    def save_new_permission(cls, data: Dict) -> Tuple[Dict[str, str], int]:
+    def create_permission(cls, data: Dict) -> Tuple[Dict[str, str], int]:
 
         permission = Permission.get_object_by_name(record_name=data['name'])
 
@@ -33,7 +33,7 @@ class PermissionsServices:
         return Permission.get_all()
 
     @staticmethod
-    def get_a_permission(permission_id):
+    def get_permission(permission_id):
         return Permission.get_object_by_id(permission_id)
 
     @classmethod
@@ -41,9 +41,7 @@ class PermissionsServices:
         return Permission.get_object_by_name(permission_name)
 
     @classmethod
-    def get_permissions_by_role(cls, role_id):
-        result = Permission.query.filter_by(role_id=role_id).all()
-        return result
-
-        # all_permissions = cls.get_all_permissions()
-        # return list(filter(lambda perm: perm.role_id == role_id, all_permissions))
+    def get_role_permissions(cls, role_id: str) -> List[Permission]:
+        role = Role.get(role_id)
+        permissions = role.permissions
+        return permissions

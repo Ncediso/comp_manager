@@ -8,11 +8,11 @@ class BlackListServices:
 
     @classmethod
     def save_token(cls, token: str) -> Tuple[Dict[str, str], int]:
+
         blacklist_token = BlacklistToken(token=token)
         try:
             # insert the token
-            db.session.add(blacklist_token)
-            db.session.commit()
+            blacklist_token.save()
             response_object = {
                 'status': 'success',
                 'message': 'Successfully logged out.'

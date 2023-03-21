@@ -23,5 +23,5 @@ class PermissionsList(Resource):
     def post(self):
         """Create a new Permission"""
         req_data = request.json
-        response, status = PermissionsServices.save_new_permission(req_data)
+        response, status = PermissionsServices.create_permission(req_data)
         return make_response(jsonify(response), status)

@@ -14,9 +14,11 @@ from flask_sqlalchemy import SQLAlchemy
 
 from .config import config_by_name
 from .app_utils import safe_get_env_var
+from .faconnect import FAConnect
 
 db = SQLAlchemy()
 flask_bcrypt = Bcrypt()
+fa_connection = FAConnect()
 
 
 def create_app(config_name: str) -> Flask:

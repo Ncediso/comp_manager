@@ -1,7 +1,8 @@
 from flask import jsonify, make_response, request
 from flask_restx import Resource
-from app.main.app_utils import UserRoleDto
+from app.main.app_utils import UserRoleDto, NotFoundError, BadRequestError
 from app.main.services import UserRolesService, UserService
+
 
 api = UserRoleDto.api
 assign_role = UserRoleDto.assign_role
@@ -21,33 +22,34 @@ class UserRoles(Resource):
     @api.doc('Get user roles')
     def get(self, user_id):
         user_roles = UserRolesService.get_user_roles(user_id)
-        if user_roles is None:
-            api.abort(404)
-        return user_roles
+        json_data = [role.to_json() for role in user_roles]
+        return make_response(jsonify(json_data), 200)
 
     @api.expect(UserRoleDto.assign_role, validate=True)
     def post(self, user_id):
         data = request.json
-        if data['role_name']: pass
-        role_name = data['role_name']
-        user = UserService.get_a_user(user_id)
+        if 'role_name' not in data:
+            raise BadRequestError("Missing role_name parameter, add correct data and retry.")
+        user = UserService.get_user(user_id)
         if user is None:
-            api.abort(404)
+            raise NotFoundError(f"User with id = {user_id} not found")
 
+        role_name = data['role_name']
         UserRolesService.assign_role(user_id, role_name)
-        response = {'msg': f"Role {role_name} successfully assigned to User"}
+        response = {'message': f"Role {role_name} successfully assigned to User"}
         return make_response(jsonify(response), 201)
 
     @api.expect(UserRoleDto.assign_role, validate=True)
     def delete(self, user_id):
         data = request.json
-        if data['role_name']: pass
-        role_name = data['role_name']
-        user = UserService.get_a_user(user_id)
+        if 'role_name' not in data:
+            raise BadRequestError("Missing role_name parameter, add correct data and retry.")
+
+        user = UserService.get_user(user_id)
         if user is None:
-            api.abort(404)
+            raise NotFoundError(f"User with id = {user_id} not found")
 
+        role_name = data['role_name']
         UserRolesService.remove_role(user_id, role_name)
-        response = {'msg': f"Role {role_name} successfully removed from User"}
+        response = {'message': f"Role {role_name} successfully removed from User"}
         return make_response(jsonify(response), 201)
-

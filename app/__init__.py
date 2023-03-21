@@ -7,6 +7,7 @@ DESCRIPTION:
 """
 from flask_restx import Api
 from flask import Blueprint
+# from app.main.app_utils import errors
 
 from app.main.controllers import user_ns
 from app.main.controllers import auth_ns
@@ -31,7 +32,8 @@ api = Api(
     version='1.0',
     description='An API with functionality to manage Access Request to Front Arena',
     authorizations=authorizations,
-    security='apikey'
+    security='apikey',
+    # errors=errors,
 )
 
 

@@ -110,4 +110,25 @@ class RolePermissionDto:
     })
 
 
+class FAObjectsDto:
+    api = Namespace('fa-connect', description='Front Arena connection related endpoints')
+
+    assign_user_profile = api.model('assign_user_profile', {
+        'user_id': fields.String(required=True, min_length=4, max_length=100),
+        'profile_name': fields.String(required=True, min_length=4, max_length=100),
+    })
+
+    fa_group = api.model('fa_group', {
+        'group_name': fields.String(required=True, min_length=4, max_length=100),
+    })
+
+    assign_group_profile = api.model('assign_group_profile', {
+        'group_name': fields.String(required=True, min_length=4, max_length=100),
+        'profile_name': fields.String(required=True, min_length=4, max_length=100),
+    })
+
+    fa_user = api.model('fa_user', {
+        'user_id': fields.String(required=True, min_length=4, max_length=100),
+    })
+
 

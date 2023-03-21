@@ -6,8 +6,12 @@ import re
 import sys
 import time
 import threading
+from functools import wraps
+from typing import Callable
 
-from ..app_utils import safe_get_env_var
+from ..app_utils import safe_get_env_var, FAConnectionError
+
+from flask import request, jsonify
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s", datefmt="%y%m%d %H%M%S")
 LOGGER = logging.getLogger(__name__)
@@ -114,9 +118,9 @@ class FAConnect:
         error = self.validate_environment_variables()
         if error:
             if error['type'] == 'type':
-                raise TypeError(error['msg'])
+                raise TypeError(error['message'])
             if error['type'] == 'value':
-                raise ValueError(error['msg'])
+                raise ValueError(error['message'])
 
         self.ael_python_path = os.environ["FA_AEL_PYTHON_PATH"]
         FAConnect.AEL_PYTHON_PATH = self.ael_python_path
@@ -295,51 +299,66 @@ class FAConnect:
     def execute(self, *args):
         raise NotImplementedError("No implementation found")
 
-    def is_connected(self):
+    @classmethod
+    def is_connected(cls):
         import acm
         return acm.IsConnected()
 
     @staticmethod
     def validate_environment_variables():
         if "FA_AEL_PYTHON_PATH" not in os.environ:
-            return {"type": "value", "msg": "Missing Front Arena AEL python path"}
+            return {"type": "value", "message": "Missing Front Arena AEL python path"}
 
         if "FA_USE_INI" not in os.environ:
-            return {"type": "value", "msg": "Missing specifier for using INI File"}
+            return {"type": "value", "message": "Missing specifier for using INI File"}
 
         use_ini = os.environ["SSO"]
         try:
             bool(use_ini)
         except Exception as err:
             message = "Expected type 'boolean' value for Use INI file, found type '{}'\n {}"
-            return {"type": "type", "msg": message.format(type(use_ini), err)}
+            return {"type": "type", "message": message.format(type(use_ini), err)}
 
         if os.environ["FA_USE_INI"] and "FA_INI_FILE_PATH" not in os.environ:
-            return {"type": "value", "msg": "Missing Front Arena Path to INI File"}
+            return {"type": "value", "message": "Missing Front Arena Path to INI File"}
 
         if os.environ["FA_USE_INI"] is False:
             if "FRONT_SERVER" not in os.environ:
-                return {"type": "value", "msg": "Missing Front Arena Server"}
+                return {"type": "value", "message": "Missing Front Arena Server"}
 
             if "FRONT_PORT" not in os.environ:
-                return {"type": "value", "msg": "Missing Front Arena Server Port"}
+                return {"type": "value", "message": "Missing Front Arena Server Port"}
 
         if "FA_INI_FILE_PATH" in os.environ and "FRONT_ENVIRONMENT" not in os.environ:
-            return {"type": "value", "msg": "Missing Front Arena environment"}
+            return {"type": "value", "message": "Missing Front Arena environment"}
 
         if "FA_USERNAME" not in os.environ:
-            return {"type": "value", "msg": "Missing Front Arena username"}
+            return {"type": "value", "message": "Missing Front Arena username"}
 
         if "FA_SSO" not in os.environ:
-            return {"type": "value", "msg": "Missing Single Sign On"}
+            return {"type": "value", "message": "Missing Single Sign On"}
 
         sso = os.environ["FA_SSO"]
         try:
             bool(sso)
         except Exception as err:
-            raise {"type": "value", "msg": "Expected 'boolean' value for SSO found '{}'\n {}".format(type(sso), err)}
+            raise {"type": "value", "message": "Expected 'boolean' value for SSO found '{}'\n {}".format(type(sso), err)}
 
         if bool(os.environ["FA_SSO"]) is False and "FA_PASSWORD" not in os.environ:
-            return {"type": "value", "msg": "Missing Front Arena Password"}
+            return {"type": "value", "message": "Missing Front Arena Password"}
         LOGGER.info("Successfully validated all configurations.")
         return None
+
+
+def fa_connection_required():
+    def wrapper(fn: Callable) -> Callable:
+        @wraps(fn)
+        def decorator(*args, **kwargs):
+            if FAConnect.is_connected():
+                return fn(*args, **kwargs)
+            else:
+                raise FAConnectionError("Connection to Front Arena not available")
+
+        return decorator
+
+    return wrapper

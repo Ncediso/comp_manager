@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import logging
-from typing import Union
+from typing import Union, Dict
 import uuid
 from flask_jwt_extended import decode_token
 
@@ -11,7 +11,7 @@ from app.main.models.base_mixins import Model
 from ..config import key
 from ...main import db, flask_bcrypt
 # from sqlalchemy.orm import relationship
-
+from ..app_utils import UnauthorizedError, BlackListedTokenError
 
 LOGGER = logging.getLogger(__name__)
 
@@ -41,6 +41,8 @@ class User(Model):
     password_hash = db.Column(db.String(100))
     authenticated = db.Column(db.Boolean, default=False)
     active = db.Column(db.Boolean, default=True)
+
+    roles = db.relationship('Role', secondary='user_roles', backref="users", lazy="select")
 
     def __init__(self, email, password, username, last_name=None, first_name=None, admin=False):
         """"""
@@ -97,33 +99,9 @@ class User(Model):
 
     def is_admin(self):
         return bool(self.admin)
-    
-    # def allowed(self, access_level):
-    #     return self.access >= access_level
 
     @staticmethod
-    def encode_auth_token(user_id: int) -> bytes:
-        """
-        Generates the Auth Token
-        :return: string
-        """
-        try:
-            payload = {
-                'exp': datetime.utcnow() + timedelta(days=1, seconds=5),
-                'iat': datetime.utcnow(),
-                'sub': user_id
-            }
-            return jwt.encode(
-                payload,
-                key,
-                algorithm='HS256'
-            )
-            
-        except Exception as e:
-            return e
-
-    @staticmethod
-    def decode_auth_token(auth_token: str) -> Union[str, int]:
+    def decode_auth_token(auth_token: str) -> Dict:
         """
         Decodes the auth token
         :param auth_token:
@@ -131,25 +109,20 @@ class User(Model):
         """
         
         try:
-            # print(auth_token)
-            print(1)
-            print(decode_token(auth_token))
-            print(2)
-            payload = jwt.decode(auth_token, key, algorithms=['HS256'])
             is_blacklisted_token = BlacklistToken.check_blacklist(auth_token)
             if is_blacklisted_token:
-                return 'Token blacklisted. Please log in again.'
-            else:
-                return payload['sub']
-        except jwt.ExpiredSignatureError:
-            return 'Signature expired. Please log in again.'
+                raise BlackListedTokenError('Token blacklisted. Please log in again')
+            payload = decode_token(auth_token)
+            return payload
+        except jwt.ExpiredSignatureError as error:
+            LOGGER.exception(error)
+            raise UnauthorizedError('Signature expired. Please log in again')
         except jwt.InvalidTokenError as error:
             LOGGER.exception(error)
-            return 'Invalid token. Please log in again.'
+            raise UnauthorizedError('Invalid token. Please log in again')
         except Exception as error:
-
             LOGGER.exception(error)
-            raise
+            raise error
 
     def __repr__(self):
         return "<User '{}'>".format(self.username)
