@@ -1,3 +1,5 @@
+from functools import wraps
+
 from flask import make_response, jsonify
 
 
@@ -89,16 +91,18 @@ def handle_request_errors():
         return response
 
 
-def custom_error_handler(func):
-    def inner_function(*args, **kwargs):
-        response = None
-        try:
-            response = func(*args, **kwargs)
-        except InvalidAPIUsageBase as error:
-            response = error.to_response()
-        except BaseException as error:
-            response = make_response(jsonify({'message': f'An error occurred please try again {error}'}), 500)
-        finally:
-            return response
-
-    return inner_function
+def custom_error_handler():
+    def wrapper(fn):
+        @wraps(fn)
+        def inner_function(*args, **kwargs):
+            response = None
+            try:
+                response = fn(*args, **kwargs)
+            except InvalidAPIUsageBase as error:
+                response = error.to_response()
+            except BaseException as error:
+                response = make_response(jsonify({'message': f'An error occurred please try again {error}'}), 500)
+            finally:
+                return response
+        return inner_function
+    return wrapper

@@ -2,7 +2,7 @@ import logging
 from typing import Dict, Tuple, List
 
 from ..models.user import Permission, RolePermissions, Role
-
+from ..app_utils import NotFoundError
 
 LOGGER = logging.getLogger(__name__)
 
@@ -43,5 +43,8 @@ class PermissionsServices:
     @classmethod
     def get_role_permissions(cls, role_id: str) -> List[Permission]:
         role = Role.get(role_id)
+        if not role:
+            raise NotFoundError(f"Role with id {role_id} not found")
+
         permissions = role.permissions
         return permissions

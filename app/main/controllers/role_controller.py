@@ -51,11 +51,7 @@ class Role(Resource):
     # @api.marshal_with(UserDto.user_update, envelope="role", code=200)
     def put(self, role_id):
         """Update the role given its identifier"""
-        role = RolesService.get_role(role_id)
-        if role is None:
-            api.abort(404)
-        else:
-            req_data = request.get_json()
-            role.update(req_data)
-            return make_response(jsonify(role), 200)
+        req_data = request.json
+        role = RolesService.update_role(role_id, req_data)
+        return make_response(jsonify(role), 200)
 

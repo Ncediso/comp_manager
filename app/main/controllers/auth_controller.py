@@ -21,7 +21,7 @@ class UserLogin(Resource):
     
     @api.doc('User login')
     @api.expect(user_auth, validate=True)
-    # @custom_error_handler
+    @custom_error_handler()
     def post(self):
         """Login a user"""
         post_data = request.json
@@ -37,6 +37,7 @@ class LogoutAPI(Resource):
 
     @jwt_required(refresh=True)
     @api.doc('Logout a user')
+    @custom_error_handler()
     def post(self):
         """Logout user from App"""
         auth_header = request.headers.get('Authorization')
@@ -53,6 +54,7 @@ class Register(Resource):
     # @custom_error_handler
     @api.doc('Register new user')
     @api.expect(AuthDto.user_register, validate=True)
+    @custom_error_handler()
     def post(self):
         """Register a new user"""
         req_data = request.get_json()
@@ -72,6 +74,7 @@ class RefreshResource(Resource):
 
     @api.doc('Refresh a user token')
     @jwt_required(refresh=True)
+    @custom_error_handler()
     def post(self):
         """Refresh user token"""
         auth_header = request.headers.get('Authorization')

@@ -3,7 +3,7 @@ from flask_restx import Resource
 from flask_jwt_extended import jwt_required
 
 # from app.main.app_utils.decorators import admin_token_required, admin_required
-from app.main.app_utils import UserDto
+from app.main.app_utils import UserDto, custom_error_handler
 from app.main.services.user_service import UserService
 
 api = UserDto.api
@@ -18,6 +18,7 @@ class UserList(Resource):
     # @admin_required()
     @api.marshal_list_with(_user, envelope='data', code=200)
     # @jwt_required()
+    @custom_error_handler()
     def get(self):
         """List all registered users"""
         all_users = UserService.get_all_users()
@@ -31,6 +32,7 @@ class UserList(Resource):
     @api.expect(_user, validate=True)
     @api.response(201, 'User successfully created.')
     @api.doc('create a new user')
+    @custom_error_handler()
     def post(self):
         """Creates a new User """
         data = request.json
@@ -45,6 +47,7 @@ class User(Resource):
 
     @api.doc('get a user')
     @api.marshal_with(_user, envelope="user", code=200)
+    @custom_error_handler()
     def get(self, user_id):
         """Get a user given its identifier"""
         user = UserService.get_user(user_id)
@@ -56,6 +59,7 @@ class User(Resource):
     @api.expect(_user, validate=True)
     @api.doc('updates a user')
     # @api.marshal_with(UserDto.user_update, envelope="user", code=200)
+    @custom_error_handler()
     def put(self, user_id):
         """Update the user given its identifier"""
         user = UserService.get_user(user_id)

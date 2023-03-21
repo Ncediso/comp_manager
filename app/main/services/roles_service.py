@@ -87,3 +87,11 @@ class RolesService:
             raise NotFoundError(f"The Role {role_id} does not contain the Permission {permission_name}")
 
         role_permission.delete()
+
+    @classmethod
+    def update_role(cls, role_id, req_data):
+        role = RolesService.get_role(role_id)
+        if role is None:
+            raise NotFoundError(f"Role with id {role_id} not found")
+
+        role.update(req_data)

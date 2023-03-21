@@ -20,6 +20,7 @@ api = FAObjectsDto.api
 class FAConnectionStatus(Resource):
 
     @api.doc('front_arena_connection_status')
+    @custom_error_handler()
     def get(self):
         """Check Front Arena Connection Status"""
         try:
@@ -34,6 +35,7 @@ class FAConnectionStatus(Resource):
 class FAConnectionConnect(Resource):
 
     @api.doc('front_arena_connection_connect')
+    @custom_error_handler()
     def get(self):
         """Connects to Front Arena"""
         try:
@@ -50,6 +52,7 @@ class FAConnectionConnect(Resource):
 class FAConnectionDisconnect(Resource):
 
     @api.doc('front_arena_connection_status')
+    @custom_error_handler()
     def get(self):
         """Disconnect Connection to Front Arena"""
         if fa_connection.is_connected() is False:
@@ -62,6 +65,7 @@ class FAConnectionDisconnect(Resource):
 class FAConnectionTest(Resource):
 
     @api.doc('front_arena_connection_test')
+    @custom_error_handler()
     def get(self):
         """Test Connection to Front Arena"""
         if fa_connection.is_connected():
@@ -81,6 +85,7 @@ class FAConnectionTest(Resource):
 class FAConnectionConfigCheck(Resource):
 
     @api.doc('front_arena_connection_configs_check')
+    @custom_error_handler()
     def get(self):
         """Check Connection Configs for Front Arena"""
         validation_message = fa_connection.validate_environment_variables()
@@ -98,10 +103,10 @@ class FAConnectionConfigCheck(Resource):
         return make_response(jsonify(message), 200)
 
 
-@api.route('/profiles')
+@api.route('/fa-profiles')
 class FAProfiles(Resource):
 
-    # @custom_error_handler
+    @custom_error_handler()
     @api.doc('list_of_all_user_profiles')
     def get(self):
         """Get all User Profiles"""
@@ -109,10 +114,10 @@ class FAProfiles(Resource):
         return make_response(jsonify({'data': profiles}), 200)
 
 
-@api.route('/groups')
+@api.route('/fa-groups')
 class FAGroups(Resource):
 
-    # @custom_error_handler
+    @custom_error_handler()
     @api.doc('list_of_all_user_groups')
     def get(self):
         """Get all User Groups"""
@@ -125,7 +130,7 @@ class FAUserProfile(Resource):
 
     @api.expect(FAObjectsDto.fa_user, validate=True)
     @api.doc('create_all_user_profiles_for_user')
-    # @custom_error_handler
+    @custom_error_handler()
     def get(self):
         """Get User Profiles for a Front Arena User Group"""
         data = request.json
@@ -134,7 +139,7 @@ class FAUserProfile(Resource):
         return make_response(jsonify({'data': profiles}), 200)
 
     @api.expect(FAObjectsDto.assign_user_profile, validate=True)
-    # @custom_error_handler
+    @custom_error_handler()
     @api.doc('assign_user_profiles_to_user')
     def post(self):
         """Assign User Profile to Front Arena User"""
@@ -146,7 +151,7 @@ class FAUserProfile(Resource):
 
     @api.expect(FAObjectsDto.assign_user_profile, validate=True)
     @api.doc('delete user profile link')
-    # @custom_error_handler
+    @custom_error_handler()
     def delete(self):
         """Remove User Profile from Front Arena User"""
         data = request.json
@@ -160,7 +165,7 @@ class FAUserProfile(Resource):
 class FAGroupProfile(Resource):
     @api.expect(FAObjectsDto.fa_group, validate=True)
     @api.doc('create_all_user_profiles_for_user_group')
-    # @custom_error_handler
+    @custom_error_handler()
     def get(self):
         """Get User Profiles for a Front Arena User Group"""
         data = request.json
@@ -170,7 +175,7 @@ class FAGroupProfile(Resource):
 
     @api.expect(FAObjectsDto.assign_group_profile, validate=True)
     @api.doc('assign_user_profiles_to_user_group')
-    # @custom_error_handler
+    @custom_error_handler()
     def post(self):
         """Assign User Profile from Front Arena User Group"""
         data = request.json
@@ -181,7 +186,7 @@ class FAGroupProfile(Resource):
 
     @api.expect(FAObjectsDto.assign_group_profile, validate=True)
     @api.doc('create a new user')
-    # @custom_error_handler
+    @custom_error_handler()
     def delete(self):
         """Remove User Profile from Front Arena User Group"""
         data = request.json
