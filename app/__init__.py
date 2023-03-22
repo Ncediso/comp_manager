@@ -6,17 +6,10 @@ DESCRIPTION:
 -------------------------
 """
 
-from flask_restx import Api
 from flask import Blueprint
-# from app.main.app_utils import errors
+from flask_restx import Api
 
-from app.main.controllers import user_ns
-from app.main.controllers import auth_ns
-from app.main.controllers import fa_connect_ns
-from app.main.controllers import user_roles_ns
-from app.main.controllers import roles_ns
-from app.main.controllers import role_perm_ns
-from app.main.controllers import permission_ns
+from app.main.controllers import auth_ns, fa_connect_ns, permission_ns, roles_ns, role_perm_ns, user_ns, user_roles_ns
 
 blueprint = Blueprint('api', __name__)
 authorizations = {
@@ -34,7 +27,6 @@ api = Api(
     description='An API with functionality to manage Access Request to Front Arena',
     authorizations=authorizations,
     security='apikey',
-    # errors=errors,
 )
 
 
