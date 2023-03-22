@@ -5,6 +5,7 @@ DESCRIPTION:
     This package
 -------------------------
 """
+
 from flask_restx import Api
 from flask import Blueprint
 # from app.main.app_utils import errors
