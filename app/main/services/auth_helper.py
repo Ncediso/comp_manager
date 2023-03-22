@@ -13,7 +13,9 @@ from app.main.services.blacklist_service import BlackListServices
 from app.main.services.user_service import UserService
 from app.main.services.user_roles_service import UserRolesService
 
-from ..app_utils import AlreadyExistsError, NotFoundError, UnauthorizedError, InternalServerError, InvalidUsernameError, InvalidAPIUsageBase
+from ..app_utils import (
+    NotFoundError, UnauthorizedError, InternalServerError, InvalidUsernameError,
+    InvalidAPIUsageBase, AccessDeniedError)
 from ..app_utils import get_token_from_header
 
 LOGGER = logging.getLogger(__name__)
@@ -108,7 +110,7 @@ def token_required(f: Callable) -> Callable:
         # get the auth token
         auth_token = get_token_from_header()
         if not auth_token:
-            raise InvalidAPIUsageBase("No token supplied token for authorization")
+            raise AccessDeniedError("No token supplied token for authorization")
 
         if Auth.is_valid_token_and_user(auth_token) is not True:
             raise NotFoundError(f"User for the supplied token not found")
@@ -121,14 +123,15 @@ def admin_token_required(f: Callable) -> Callable:
     def decorated(*args, **kwargs):
         # get the auth token
         auth_token = get_token_from_header()
+        if not auth_token:
+            raise AccessDeniedError("No token supplied token for authorization")
 
         # Error will be thrown if the token is invalid
         is_valid = Auth.is_valid_token_and_user(auth_token)
         payload = decode_token(auth_token)
         admin = payload.get('is_administrator')
-        if not admin:
-            raise UnauthorizedError("Unauthorised token supplied, admin token required.")
-
+        if admin is None:
+            message = "User token supplied is not authorized to access this resource, Admin token required."
+            raise AccessDeniedError(message)
         return f(*args, **kwargs)
-
     return decorated

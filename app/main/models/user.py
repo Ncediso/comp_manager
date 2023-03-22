@@ -11,7 +11,7 @@ from app.main.models.base_mixins import Model
 from ..config import key
 from ...main import db, flask_bcrypt
 # from sqlalchemy.orm import relationship
-from ..app_utils import UnauthorizedError, BlackListedTokenError
+from ..app_utils import UnauthorizedError, BlackListedTokenError, AccessDeniedError
 
 LOGGER = logging.getLogger(__name__)
 
@@ -111,15 +111,15 @@ class User(Model):
         try:
             is_blacklisted_token = BlacklistToken.check_blacklist(auth_token)
             if is_blacklisted_token:
-                raise BlackListedTokenError('Token blacklisted. Please log in again')
+                raise BlackListedTokenError('Token blacklisted. Please supply a valid token')
             payload = decode_token(auth_token)
             return payload
         except jwt.ExpiredSignatureError as error:
             LOGGER.exception(error)
-            raise UnauthorizedError('Signature expired. Please log in again')
+            raise AccessDeniedError('Signature expired. Please supply a valid token')
         except jwt.InvalidTokenError as error:
             LOGGER.exception(error)
-            raise UnauthorizedError('Invalid token. Please log in again')
+            raise AccessDeniedError('Invalid token. Please supply a valid token')
         except Exception as error:
             LOGGER.exception(error)
             raise error

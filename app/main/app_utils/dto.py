@@ -130,5 +130,3 @@ class FAObjectsDto:
     fa_user = api.model('fa_user', {
         'user_id': fields.String(required=True, min_length=4, max_length=100),
     })
-
-

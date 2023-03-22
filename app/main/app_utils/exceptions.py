@@ -72,11 +72,15 @@ class BlackListedTokenError(InvalidAPIUsageBase):
 
 
 class BadRequestError(InvalidAPIUsageBase):
-    status_code = 400
+    pass
 
 
 class FAConnectionError(InvalidAPIUsageBase):
     status_code = 503
+
+
+class AccessDeniedError(InvalidAPIUsageBase):
+    status_code = 403
 
 
 def handle_request_errors():

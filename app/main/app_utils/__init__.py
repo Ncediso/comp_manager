@@ -16,6 +16,7 @@ from .dto import AuthDto, PermissionDto, RoleDto, RolePermissionDto, UserDto, Us
 # from .decorators import token_required, admin_token_required
 from .constants import VARS
 from .exceptions import (
+    AccessDeniedError,
     AlreadyExistsError,
     BadRequestError,
     BlackListedTokenError,

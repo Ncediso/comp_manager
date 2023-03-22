@@ -51,7 +51,6 @@ class Register(Resource):
     Creates a new user by taking 'user_register' input
     """
 
-    # @custom_error_handler
     @api.doc('Register new user')
     @api.expect(AuthDto.user_register, validate=True)
     @custom_error_handler()
