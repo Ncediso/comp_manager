@@ -312,7 +312,7 @@ class FAConnect:
         if "FA_USE_INI" not in os.environ:
             return {"type": "value", "message": "Missing specifier for using INI File"}
 
-        use_ini = os.environ["SSO"]
+        use_ini = os.environ["FA_SSO"]
         try:
             bool(use_ini)
         except Exception as err:
