@@ -323,13 +323,13 @@ class FAConnect:
             return {"type": "value", "message": "Missing Front Arena Path to INI File"}
 
         if os.environ["FA_USE_INI"] is False:
-            if "FRONT_SERVER" not in os.environ:
+            if "FA_SERVER" not in os.environ:
                 return {"type": "value", "message": "Missing Front Arena Server"}
 
-            if "FRONT_PORT" not in os.environ:
+            if "FA_PORT" not in os.environ:
                 return {"type": "value", "message": "Missing Front Arena Server Port"}
 
-        if "FA_INI_FILE_PATH" in os.environ and "FRONT_ENVIRONMENT" not in os.environ:
+        if "FA_INI_FILE_PATH" in os.environ and "FA_ENVIRONMENT" not in os.environ:
             return {"type": "value", "message": "Missing Front Arena environment"}
 
         if "FA_USERNAME" not in os.environ:
